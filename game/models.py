@@ -26,7 +26,6 @@ class Game(models.Model):
         [2, 4, 6],  # Diagonal rtl
     ]
 
-    @property
     def current_player(self, turn_num):
         "Returns player's id (player1/player2)"
         return self.SYMS[0] if turn_num % 2 else self.SYMS[1]
@@ -37,7 +36,7 @@ class Game(models.Model):
 
     def is_over(self):
         for wins in self.WINNING:
-            w = ''.join((self.field[pos] for pos in wins))
+            w = ''.join((str(self.field[pos]) for pos in wins))
             for player in self.SYMS:
                 if w == 3 * player:
                    return w
@@ -57,10 +56,11 @@ class Turn(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     field_num = models.IntegerField()
 
+    # @property
     def save(self, *args, **kwargs):
         self.game.build_game()
         finished = self.game.is_over()
-        if self.game.correct_turn(self.field_num) or not finished:
+        if self.game.correct_turn(self.field_num) and not finished:
             super(Turn, self).save(*args, **kwargs)
         else:
-            raise ValidationError
+            raise ValidationError('Incorrect turn')
