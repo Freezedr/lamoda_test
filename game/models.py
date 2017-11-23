@@ -1,9 +1,18 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
+"""
+    DB structure:
 
-# Create your models here.
+    Game - just id
+    Turn - id, game_id, field_num
 
+    Most of business-logic is located in Game model 
+      - building board
+      - player's turn determination
+      - checking turns (only same field attempts, 
+      current player is solved automatically)
+"""
 
 class Game(models.Model):
     # Non-stored attribs
